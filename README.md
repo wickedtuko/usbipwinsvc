@@ -20,7 +20,8 @@ cd c:\g
 git clone https://github.com/microsoft/vcpkg
 cd .\vcpkg\
 .\bootstrap-vcpkg.bat
-
+# Install CLI library
+vcpkg install cli
 ```
 
 # Related projects
