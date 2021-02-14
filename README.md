@@ -15,10 +15,8 @@ choco install git -y
 Exit from the running shell to update environment variables this is needed to make the git commands available. Then open a new elevated PowerShell prompt and continue
 ```PowerShell
 # Install Visual Studio 2019 Build Tools
-choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
-choco install visualstudio2019buildtools -y
-# vcpkg needs MSVCP140.dll etc, this can be installed indirectly using neovim (whihc I am using anyway)
-choco install neovim -y
+# Workload IDs - https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2019&preserve-view=true#c-build-tools
+choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools" -y
 # Get vcpkg and bootstrap
 mkdir c:\g
 cd c:\g
@@ -27,6 +25,11 @@ cd .\vcpkg\
 .\bootstrap-vcpkg.bat
 # Install CLI library
 .\vcpkg.exe install cli
+
+choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
+choco install visualstudio2019buildtools -y
+# vcpkg needs MSVCP140.dll etc, this can be installed indirectly using neovim (whihc I am using anyway)
+choco install neovim -y
 ```
 
 # Related projects
