@@ -12,11 +12,15 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 # Install Git for Windows
 choco install git -y
 ```
-Exit from the running shell to update environment variables, need to make the git command available. Open a new elevated PowerShell prompt and continue
+Exit from the running shell to update environment variables this is needed to make the git commands available. Then open a new elevated PowerShell prompt and continue
 ```PowerShell
+# Get vcpkg and bootstrap
 mkdir c:\g
 cd c:\g
 git clone https://github.com/microsoft/vcpkg
+cd .\vcpkg\
+.\bootstrap-vcpkg.bat
+
 ```
 
 # Related projects
