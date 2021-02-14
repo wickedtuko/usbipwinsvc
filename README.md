@@ -37,6 +37,8 @@ cd .\vcpkg\
 .\bootstrap-vcpkg.bat
 # Install CLI library
 .\vcpkg.exe install cli
+# Integrate wiht Visual Studio
+.\vcpkg\vcpkg integrate install
 
 choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
 choco install visualstudio2019buildtools -y
