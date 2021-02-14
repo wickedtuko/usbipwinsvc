@@ -9,6 +9,10 @@ Set-ExecutionPolicy Unrestricted
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 choco install git -y
 ```
+Exit from the running shell to update environment variables, need to make the git command available.
+```
+tbd
+```
 
 # Related projects
 [USB/IP for Windows](https://github.com/cezanne/usbip-win)  
