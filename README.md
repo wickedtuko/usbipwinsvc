@@ -13,7 +13,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 choco install git -y
 
 # Force reload environment variables
-$env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."   
+$env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
 Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 Update-SessionEnvironment
 
@@ -51,6 +51,10 @@ choco install vscode -y
 choco install notepadplusplus -y
 ```
 
+# Building the project
+```PowerShell
+msbuild usbipwinsvc.vcxproj /p:configuration=Debug /p:platform=win32
+```
 # Related projects
 [USB/IP for Windows](https://github.com/cezanne/usbip-win)  
 [Interactive CLI](https://github.com/daniele77/cli)  
