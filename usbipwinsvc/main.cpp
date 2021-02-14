@@ -19,107 +19,29 @@ namespace cli
 using namespace cli;
 using namespace std;
 
-void run_telnet_server(void)
+enum class TelnetStateFlags
 {
-    // setup cli
-
-    auto rootMenu = make_unique< Menu >( "cli" );
-    rootMenu -> Insert(
-            "hello",
-            [](std::ostream& out){ out << "Hello, world\n"; },
-            "Print hello world" );
-    rootMenu -> Insert(
-            "hello_everysession",
-            [](std::ostream&){ Cli::cout() << "Hello, everybody" << std::endl; },
-            "Print hello everybody on all open sessions" );
-    rootMenu -> Insert(
-            "answer",
-            [](std::ostream& out, int x){ out << "The answer is: " << x << "\n"; },
-            "Print the answer to Life, the Universe and Everything " );
-    rootMenu -> Insert(
-            "color",
-            [](std::ostream& out){ out << "Colors ON\n"; SetColor(); },
-            "Enable colors in the cli" );
-    rootMenu -> Insert(
-            "nocolor",
-            [](std::ostream& out){ out << "Colors OFF\n"; SetNoColor(); },
-            "Disable colors in the cli" );
-
-    auto subMenu = make_unique< Menu >( "sub" );
-    subMenu -> Insert(
-            "hello",
-            [](std::ostream& out){ out << "Hello, submenu world\n"; },
-            "Print hello world in the submenu" );
-    subMenu -> Insert(
-            "demo",
-            [](std::ostream& out){ out << "This is a sample!\n"; },
-            "Print a demo string" );
-
-    auto subSubMenu = make_unique< Menu >( "subsub" );
-        subSubMenu -> Insert(
-            "hello",
-            [](std::ostream& out){ out << "Hello, subsubmenu world\n"; },
-            "Print hello world in the sub-submenu" );
-    subMenu -> Insert( std::move(subSubMenu));
-
-    rootMenu -> Insert( std::move(subMenu) );
-
-     // create a cli with the given root menu and a persistent storage
-    // you must pass to FileHistoryStorage the path of the history file
-    // if you don't pass the second argument, the cli will use a VolatileHistoryStorage object that keeps in memory
-    // the history of all the sessions, until the cli is shut down.
-    Cli cli( std::move(rootMenu), std::make_unique<FileHistoryStorage>(".cli") );
-    // global exit action
-    cli.ExitAction( [](auto& out){ out << "Goodbye and thanks for all the fish.\n"; } );
-    // std exception custom handler
-    cli.StdExceptionHandler(
-        [](std::ostream& out, const std::string& cmd, const std::exception& e)
-        {
-            out << "Exception caught in cli handler: "
-                << e.what()
-                << " handling command: "
-                << cmd
-                << ".\n";
-        }
-    );
-
-    MainScheduler scheduler;
-    CliLocalTerminalSession localSession(cli, scheduler, std::cout, 200);
-    localSession.ExitAction(
-        [&scheduler](auto& out) // session exit action
-        {
-            out << "Closing App...\n";
-            scheduler.Stop();
-        }
-    );
-
-    // setup server
-
-    CliTelnetServer server(scheduler, 5000, cli);
-    // exit action for all the connections
-    server.ExitAction( [](auto& out) { out << "Terminating this session...\n"; } );
-
-    scheduler.Run();
-}
+    INIT    = 1 << 00,
+    RUNNING = 1 << 01,
+    STOPPED = 1 << 02,
+};
 
 class Service : public WindowsService {
 	using WindowsService::WindowsService;
 private:
-        bool b_server_running = false;
         MainScheduler* scheduler;
         CliTelnetServer* server;
         Cli* cli;
+        TelnetStateFlags telnet_state;
 
 protected:
 	virtual DWORD WINAPI worker(LPVOID) {
-        std::string debugmsg = "USPIPSVC: worker called";
+        std::string debugmsg = "USBIPSVC: worker called";
         OutputDebugString(debugmsg.c_str());
-        this->scheduler->Run();
-                //if(false == this->b_server_running)
-                //{
-                //        this->b_server_running = true;
-                //        run_telnet_server();
-                //}
+        if (telnet_state == TelnetStateFlags::INIT) {
+            this->scheduler->Run();
+            telnet_state = TelnetStateFlags::RUNNING;
+        }
                 
 		//  Periodically check if the service has been requested to stop
 		while (WaitForSingleObject(stopEvent, 0) != WAIT_OBJECT_0) {
@@ -148,12 +70,14 @@ protected:
 
 	// Gets called during startup.
 	virtual void on_startup() {
+        std::string debugmsg = "USBIPSVC: on_startup";
+        OutputDebugString(debugmsg.c_str());
         //__debugbreak();
 		/*
 		 * Perform tasks necessary to start the service here.
 		 */
                 //run_telnet_server();
-        //this->scheduler.Run();
+        telnet_state = TelnetStateFlags::INIT;
 	}
 
 	// Gets called when pause is thrown and pause/continue is enabled.
@@ -175,6 +99,10 @@ protected:
 		/*
 		 * Perform tasks necessary to stop the service loop here.
 		 */
+        this->scheduler->Stop();
+        telnet_state = TelnetStateFlags::STOPPED;
+        std::string debugmsg = "USBIPSVC: on_stop";
+        OutputDebugString(debugmsg.c_str());
 	}
 
 	// Gets called all the way at the end of the liecycle.

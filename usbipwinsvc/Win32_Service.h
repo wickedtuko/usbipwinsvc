@@ -202,7 +202,7 @@ void WindowsService::on_error() {
 
 	if (SetServiceStatus(statusHandle, &status) == FALSE)
 	{
-		std::string debugmsg = name + ": service_main: SetServiceStatus returned an error";
+		std::string debugmsg = name + ": service_main: SetServiceStatus returned an error : " + std::to_string(status.dwWin32ExitCode);
 		OutputDebugString(debugmsg.c_str());
 	}
 }
@@ -250,7 +250,7 @@ void WindowsService::set_state(DWORD state) {
 	SetServiceStatus(statusHandle, &status);
 	if (SetServiceStatus(statusHandle, &status) == FALSE)
 	{
-		std::string debugmsg = name + ": service_main: SetServiceStatus returned an error";
+		std::string debugmsg = "USBIPSVC" + name + ": service_main: SetServiceStatus returned an error";
 		OutputDebugString(debugmsg.c_str());
 	}
 }
