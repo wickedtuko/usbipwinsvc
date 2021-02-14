@@ -44,8 +44,11 @@ choco install visualstudio2019buildtools --package-parameters "--add Microsoft.V
 choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
 choco install visualstudio2019buildtools -y
 # vcpkg needs MSVCP140.dll etc, this can be installed indirectly using neovim (whihc I am using anyway)
+
+# Install editors
 choco install neovim -y
 choco install vscode -y
+choco install notepadplusplus -y
 ```
 
 # Related projects
