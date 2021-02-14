@@ -30,7 +30,7 @@ cd .\vcpkg\
 # Install CLI library
 .\vcpkg.exe install cli
 # Integrate wiht Visual Studio
-.\vcpkg\vcpkg integrate install
+.\vcpkg integrate install
 
 ```
 Exit from the running shell to update environment variables this is needed to make the git commands available. Then open a new elevated PowerShell prompt and continue
