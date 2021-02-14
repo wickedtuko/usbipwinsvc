@@ -16,6 +16,8 @@ Exit from the running shell to update environment variables this is needed to ma
 ```PowerShell
 # Install Visual Studio 2019 Build Tools
 # Workload IDs - https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2019&preserve-view=true#c-build-tools
+choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" -y
+
 choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools" -y
 # Get vcpkg and bootstrap
 mkdir c:\g
