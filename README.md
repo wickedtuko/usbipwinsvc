@@ -11,6 +11,16 @@ Set-ExecutionPolicy Unrestricted
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 # Install Git for Windows
 choco install git -y
+
+# Force reload environment variables
+$env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."   
+Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+Update-SessionEnvironment
+
+# Install Visual Studio 2019 Build Tools
+# Workload IDs - https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2019&preserve-view=true#c-build-tools
+choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" -y
+
 ```
 Exit from the running shell to update environment variables this is needed to make the git commands available. Then open a new elevated PowerShell prompt and continue
 ```PowerShell
