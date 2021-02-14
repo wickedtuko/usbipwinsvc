@@ -45,6 +45,7 @@ choco install visualstudio2019buildtools --package-parameters "--allWorkloads --
 choco install visualstudio2019buildtools -y
 # vcpkg needs MSVCP140.dll etc, this can be installed indirectly using neovim (whihc I am using anyway)
 choco install neovim -y
+choco install vscode -y
 ```
 
 # Related projects
