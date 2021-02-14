@@ -33,6 +33,8 @@ cd .\vcpkg\
 choco install neovim -y
 choco install vscode -y
 choco install notepadplusplus -y
+# CLI support with telnet server is not in vcpkg yet, so get source
+git clone https://github.com/daniele77/cli.git
 ```
 # Building the project
 ```PowerShell
