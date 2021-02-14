@@ -31,26 +31,11 @@ cd .\vcpkg\
 .\vcpkg.exe install cli
 # Integrate wiht Visual Studio
 .\vcpkg.exe integrate install
-
-```
-Exit from the running shell to update environment variables this is needed to make the git commands available. Then open a new elevated PowerShell prompt and continue
-```PowerShell
-# Install Visual Studio 2019 Build Tools
-# Workload IDs - https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2019&preserve-view=true#c-build-tools
-choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" -y
-
-choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools" -y
-
-choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
-choco install visualstudio2019buildtools -y
-# vcpkg needs MSVCP140.dll etc, this can be installed indirectly using neovim (whihc I am using anyway)
-
 # Install editors
 choco install neovim -y
 choco install vscode -y
 choco install notepadplusplus -y
 ```
-
 # Building the project
 ```PowerShell
 msbuild usbipwinsvc.vcxproj /p:configuration=Debug /p:platform=win32
