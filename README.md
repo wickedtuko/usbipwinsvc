@@ -40,6 +40,15 @@ git clone https://github.com/daniele77/cli.git
 ```PowerShell
 msbuild usbipwinsvc.vcxproj /p:configuration=Debug /p:platform=win32
 ```
+# Installing the service
+Change full path as appropriate
+```PowerShell
+New-Service -Name "USBIP Service" -BinaryPathName C:\g\usbipwinsvc\usbipwinsvc\debug\usbipwinsvc.exe
+```
+To delete the service
+```PowerShell
+sc.exe delete "USBIP Service"
+```
 # Related projects
 [USB/IP for Windows](https://github.com/cezanne/usbip-win)  
 [Interactive CLI](https://github.com/daniele77/cli)  

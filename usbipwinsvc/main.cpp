@@ -190,31 +190,16 @@ public:
         );
 
         this->scheduler = new MainScheduler();
-        //CliLocalTerminalSession localSession(  , scheduler, std::cout, 200);
-        //localSession.ExitAction(
-        //    [this](auto& out) // session exit action
-        //    {
-        //        out << "Closing App...\n";
-        //        this->scheduler->Stop();
-        //    }
-        //);
 
         // setup server
-        //CliTelnetServer _server( *(scheduler.get()), 5000, *(cli) );
         this->server = new CliTelnetServer( *scheduler, 5000, *cli );
         // exit action for all the connections
         this->server->ExitAction([](auto& out) { out << "Terminating this session...\n"; });
-
-        //scheduler.Run();
-
     }
 };
 
 int main()
 {
-    Service test("test", true);
-	return test.run();
-        
-        //run_telnet_server();
-        //return 0;
+    Service usb_ip_svc("USBIP Service", true);
+	return usb_ip_svc.run();
 }
