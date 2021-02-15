@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <Windows.h>
 
 class WindowsService {
@@ -105,7 +106,7 @@ void WINAPI WindowsService::service_main() {
 	// Register our service control handler with the SCM
 	instance->statusHandle = RegisterServiceCtrlHandler(instance->Wname, instance->control_handler);
 
-	if (instance->statusHandle == NULL) {
+	if (instance->statusHandle == 0) {
 		return;
 	}
 
@@ -162,6 +163,9 @@ DWORD WINAPI WindowsService::worker_thread(LPVOID lpParam) {
 }
 
 void WindowsService::startup() {
+	std::string debugmsg = "USBIPSVC:startup>>";
+	OutputDebugString(debugmsg.c_str());
+	
 	ZeroMemory(&status, sizeof(status));
 	status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
 	set_acceptedControls(false);
@@ -182,6 +186,8 @@ void WindowsService::startup() {
 	set_acceptedControls(true);
 
 	set_state(SERVICE_RUNNING);
+	debugmsg = "USBIPSVC:startup<<";
+	OutputDebugString(debugmsg.c_str());
 }
 
 void WindowsService::exit() {
@@ -247,15 +253,22 @@ void WindowsService::set_state(DWORD state) {
 	status.dwWin32ExitCode = 0;
 	status.dwCheckPoint = 0;
 	status.dwWaitHint = 0;
-	SetServiceStatus(statusHandle, &status);
-	if (SetServiceStatus(statusHandle, &status) == FALSE)
+	//SetServiceStatus(statusHandle, &status);
+	if (SetServiceStatus(statusHandle, &status)==FALSE)
 	{
-		std::string debugmsg = "USBIPSVC" + name + ": service_main: SetServiceStatus returned an error";
-		OutputDebugString(debugmsg.c_str());
+		DWORD le = GetLastError();
+		std::stringstream stream;
+		stream << "USBIPSVC:" << name << ": service_main: SetServiceStatus returned an error, state:error_code =  " << std::hex << state << ":" << le;
+		OutputDebugString(stream.str().c_str());
+		//std::string debugmsg = "USBIPSVC:" + name + ": service_main: SetServiceStatus returned an error : " + std::to_string(state);
+		//OutputDebugString(debugmsg.c_str());
 	}
 }
 
 void WindowsService::set_acceptedControls(bool _in) {
+	std::string debugmsg = "USBIPSVC:set_acceptedControls>>";
+	OutputDebugString(debugmsg.c_str());
+
 	if (_in) {
 		status.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
 		if (canPauseContinue) {
@@ -266,11 +279,13 @@ void WindowsService::set_acceptedControls(bool _in) {
 		status.dwControlsAccepted = 0;
 	}
 
-	if (SetServiceStatus(statusHandle, &status) == FALSE)
-	{
-		std::string debugmsg = name + ": service_main: SetServiceStatus change accepted controls operation failed";
-		OutputDebugString(debugmsg.c_str());
-	}
+	//if (SetServiceStatus(statusHandle, &status) == FALSE)
+	//{
+	//	DWORD le = GetLastError();
+	//	std::stringstream stream;
+	//	stream << "USBIPSVC:" << name << ": service_main: SetServiceStatus change accepted controls operation failed, error_code =  "  << le;
+	//	OutputDebugString(stream.str().c_str());
+	//}
 }
 
 void WindowsService::bump() {
