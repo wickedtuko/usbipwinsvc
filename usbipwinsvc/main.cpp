@@ -15,6 +15,7 @@ using namespace std;
 
 enum class TelnetStateFlags
 {
+    UNDEF   = 0,
     INIT    = 1 << 00,
     RUNNING = 1 << 01,
     STOPPED = 1 << 02,
