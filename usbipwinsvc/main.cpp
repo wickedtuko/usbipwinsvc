@@ -1,23 +1,17 @@
-// TODO: NB boostasioscheduler.h includes boost asio
-// so in Windows it should appear before cli.h and clilocalsession.h that include rang,
-// because both include WinSock.h
+#include <cli/clilocalsession.h> // include boost asio
+#include <cli/remotecli.h>
+// TODO. NB: remotecli.h and clilocalsession.h both includes boost asio,
+// so in Windows it should appear before cli.h that include rang
 // (consider to provide a global header file for the library)
-#include <cli/boostasioscheduler.h>
-#include <cli/boostasioremotecli.h>
-namespace cli
-{    
-    using MainScheduler = BoostAsioScheduler;
-    using CliTelnetServer = BoostAsioCliTelnetServer;
-}
-
 #include <cli/cli.h>
-#include <cli/clifilesession.h>
 #include <cli/filehistorystorage.h>
-#include <cli/clilocalsession.h>
 
-#include "Win32_Service.h"
+#define ENABLE_TELNET_SERVER
+
 using namespace cli;
 using namespace std;
+
+#include "Win32_Service.h"
 
 enum class TelnetStateFlags
 {
@@ -29,7 +23,8 @@ enum class TelnetStateFlags
 class Service : public WindowsService {
 	using WindowsService::WindowsService;
 private:
-        MainScheduler* scheduler;
+        //MainScheduler* scheduler;
+        boost::asio::io_context* ios;
         CliTelnetServer* server;
         Cli* cli;
         TelnetStateFlags telnet_state;
@@ -39,7 +34,8 @@ protected:
         std::string debugmsg = "USBIPSVC: worker called";
         OutputDebugString(debugmsg.c_str());
         if (telnet_state == TelnetStateFlags::INIT) {
-            this->scheduler->Run();
+            //this->scheduler->Run();
+            this->ios->run();
             telnet_state = TelnetStateFlags::RUNNING;
         }
                 
@@ -99,7 +95,9 @@ protected:
 		/*
 		 * Perform tasks necessary to stop the service loop here.
 		 */
-        this->scheduler->Stop();
+
+        //this->scheduler->Stop();
+        this->ios->stop();
         telnet_state = TelnetStateFlags::STOPPED;
         std::string debugmsg = "USBIPSVC: on_stop";
         OutputDebugString(debugmsg.c_str());
@@ -189,10 +187,13 @@ public:
             }
         );
 
-        this->scheduler = new MainScheduler();
+        //this->scheduler = new MainScheduler();
+        this->ios = new boost::asio::io_context();
 
         // setup server
-        this->server = new CliTelnetServer( *scheduler, 5000, *cli );
+        //this->server = new CliTelnetServer( *scheduler, 5000, *cli );
+        this->server = new CliTelnetServer(*ios, 5000, *cli);
+
         // exit action for all the connections
         this->server->ExitAction([](auto& out) { out << "Terminating this session...\n"; });
     }
