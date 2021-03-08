@@ -23,7 +23,6 @@ enum class TelnetStateFlags
 class Service : public WindowsService {
 	using WindowsService::WindowsService;
 private:
-        //MainScheduler* scheduler;
         boost::asio::io_context* ios;
         CliTelnetServer* server;
         Cli* cli;
@@ -34,7 +33,6 @@ protected:
         std::string debugmsg = "USBIPSVC: worker called";
         OutputDebugString(debugmsg.c_str());
         if (telnet_state == TelnetStateFlags::INIT) {
-            //this->scheduler->Run();
             this->ios->run();
             telnet_state = TelnetStateFlags::RUNNING;
         }
@@ -72,7 +70,6 @@ protected:
 		/*
 		 * Perform tasks necessary to start the service here.
 		 */
-                //run_telnet_server();
         telnet_state = TelnetStateFlags::INIT;
 	}
 
@@ -95,8 +92,6 @@ protected:
 		/*
 		 * Perform tasks necessary to stop the service loop here.
 		 */
-
-        //this->scheduler->Stop();
         this->ios->stop();
         telnet_state = TelnetStateFlags::STOPPED;
         std::string debugmsg = "USBIPSVC: on_stop";
@@ -172,7 +167,6 @@ public:
        // the history of all the sessions, until the cli is shut down.
 
         this->cli = new Cli(std::move(rootMenu), std::make_unique<FileHistoryStorage>(".cli"));
-        //Cli cli(std::move(rootMenu), std::make_unique<FileHistoryStorage>(".cli"));
         // global exit action
         this->cli->ExitAction([](auto& out) { out << "Goodbye and thanks for all the fish.\n"; });
         // std exception custom handler
@@ -187,11 +181,9 @@ public:
             }
         );
 
-        //this->scheduler = new MainScheduler();
         this->ios = new boost::asio::io_context();
 
         // setup server
-        //this->server = new CliTelnetServer( *scheduler, 5000, *cli );
         this->server = new CliTelnetServer(*ios, 5000, *cli);
 
         // exit action for all the connections
