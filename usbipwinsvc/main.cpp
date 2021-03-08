@@ -190,6 +190,13 @@ public:
         // exit action for all the connections
         this->server->ExitAction([](auto& out) { out << "Terminating this session...\n"; });
     }
+
+    ~Service()
+    {
+        delete server;
+        delete cli;
+        delete cli;
+    }
 };
 
 int main()
