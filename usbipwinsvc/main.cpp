@@ -117,7 +117,7 @@ protected:
 
 public:
     Service(std::string _name, bool _canPauseContinue)
-        : WindowsService(_name, _canPauseContinue)
+        : WindowsService(_name, _canPauseContinue), telnet_state(TelnetStateFlags::UNDEF)
     {
         // setup cli
 
